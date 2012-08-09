@@ -14,22 +14,22 @@
 #include "config.h"
 #include "keymap.h"
 
-void term_cursor(size_t x, size_t y); /* set cursor position to (x, y) within page */
-void term_delete(size_t from, size_t to, size_t stop);
-void term_destroy();
-bool term_do_control_char(char c);
-void term_erase(size_t from, size_t to);
-void term_invalidate_range(size_t from, size_t to);
-void term_newline(bool carriage_return);
-void term_reset();
-void term_setcharattributes(int32_t arg[]);
-void term_setscrollregion(size_t top, size_t bottom);
-void term_tab_move(int n);
-void term_writechar(const wchar_t ucs2char);
+static void term_cursor(size_t x, size_t y); /* set cursor position to (x, y) within page */
+static void term_delete(size_t from, size_t to, size_t stop);
+static void term_destroy();
+static bool term_do_control_char(char c);
+static void term_erase(size_t from, size_t to);
+static void term_invalidate_range(size_t from, size_t to);
+static void term_newline(bool carriage_return);
+static void term_reset();
+static void term_setcharattributes(int32_t arg[]);
+static void term_setscrollregion(size_t top, size_t bottom);
+static void term_tab_move(int n);
+static void term_writechar(const wchar_t ucs2char);
 
-void esc_dispatch(char function, char intermediate);
-void csi_dispatch(char function, int32_t arg[], char privflag);
-void osc_dispatch(char *arg, size_t length);
+static void esc_dispatch(char function, char intermediate);
+static void csi_dispatch(char function, int32_t arg[], char privflag);
+static void osc_dispatch(char *arg, size_t length);
 
 /* Data types and globals {{{ */
 
@@ -260,7 +260,7 @@ term_align(size_t *p1, size_t *p2, size_t *p3)
 }
 
 
-void
+static unused void
 term_dump(struct glyph_t *text)
 /* Useful for debugging */
 {
@@ -290,7 +290,7 @@ term_gc()
     term_align(NULL, NULL, NULL);
 }
 
-void
+static void
 term_cursor(size_t x, size_t y)
 {
     terminal.x = min(x, EOL);
@@ -302,7 +302,7 @@ term_cursor(size_t x, size_t y)
 
 
 
-void
+static void
 term_fill(size_t from, size_t to, wchar_t c)
 {
     if (from > to) {
@@ -325,7 +325,7 @@ term_fill(size_t from, size_t to, wchar_t c)
 }
 
 
-void
+static void
 term_erase(size_t from, size_t to)
 {
     if (from > to) {
@@ -347,7 +347,7 @@ term_erase(size_t from, size_t to)
     term_invalidate_range(from, to);
 }
 
-void
+static void
 term_delete(size_t from, size_t to, size_t stop)
 /* Delete characters, i.e. move the following back and erase those at the end
  * from: cell index to start erasing (inclusive)
@@ -371,7 +371,7 @@ term_delete(size_t from, size_t to, size_t stop)
     term_invalidate_range(from, stop);
 }
 
-void
+static void
 term_insert(size_t from, size_t num, size_t stop)
 /* Insert num blank cells starting at from and push the following forward,
    no longer than to stop
@@ -392,7 +392,7 @@ term_insert(size_t from, size_t num, size_t stop)
     term_invalidate_range(from, stop);
 }
 
-void
+static void
 term_newline(bool carriage_return)
 {
     size_t bottom = terminal.margin.bottom;
@@ -421,7 +421,7 @@ term_invalidate()
     }
 }
 
-void
+static void
 term_invalidate_range(size_t start, size_t end)
 {
     size_t y;
@@ -448,7 +448,7 @@ term_invalidate_range(size_t start, size_t end)
     }
 }
 
-void
+static void
 term_invalidate_blinkers() {
     size_t row, col;
     struct glyph_t *g;
@@ -466,7 +466,7 @@ term_invalidate_blinkers() {
 
 
 
-void
+static void
 term_flush_section(size_t col, size_t row, wchar_t *text, size_t length, color_t fg, color_t bg, char_attr_t attr)
 {
     if (*text == '\0') {
@@ -505,7 +505,7 @@ term_flush_section(size_t col, size_t row, wchar_t *text, size_t length, color_t
     }
 }
 
-void
+static void
 term_flush_cursor()
 {
     wchar_t c;
@@ -537,7 +537,7 @@ term_flush_cursor()
     }
 }
 
-bool /* Return true if we painted */
+static bool /* Return true if we painted */
 term_flushlines()
 {
     size_t row;
@@ -646,7 +646,7 @@ term_init(struct term_push_callbacks *callbacks)
     atexit(term_destroy);
 }
 
-void
+static void
 term_tabs_clear()
 {
     size_t i;
@@ -655,7 +655,7 @@ term_tabs_clear()
     }
 }
 
-void
+static void
 term_tabs_every(size_t n)
 {
     size_t i;
@@ -664,7 +664,7 @@ term_tabs_every(size_t n)
     }
 }
 
-void
+static void
 term_tab_move(int n)
 /* Go n tabs forward (or backward if negative) */
 {
@@ -751,7 +751,7 @@ term_resize(size_t cols, size_t rows)
 }
 
 
-void
+static void
 term_destroy()
 {
     debug(".");
@@ -760,7 +760,7 @@ term_destroy()
     free(terminal.tabstop);
 }
 
-bool
+static bool
 term_do_control_char(char c)
 /* Test if c is a control char; if so execute the control and return true
  * Else return false
@@ -851,7 +851,7 @@ term_do_control_char(char c)
     return false;
 }
 
-void
+static void
 term_writechar(wchar_t ch)
 {
     if (terminal.charset[terminal.charset_mode] == CHARSET_DEC) {
@@ -892,7 +892,7 @@ term_writechar(wchar_t ch)
     terminal.lastchar = ch;
 }
 
-void
+static void
 term_writechar_times(const wchar_t ch, size_t times)
 {
     if (ch) {
@@ -904,7 +904,7 @@ term_writechar_times(const wchar_t ch, size_t times)
 }
 
 
-void
+static void
 term_reset()
 {
     terminal.style.foreground = config.foreground;
@@ -940,7 +940,7 @@ term_reset()
     term_invalidate();
 }
 
-void
+static void
 term_report_cursor_pos()
 {
     char buf[30];
@@ -950,7 +950,7 @@ term_report_cursor_pos()
     term_cb->write_host(buf, strlen(buf));
 }
 
-void
+static void
 term_set_originmode(bool origin)
 {
     if (!origin) {
@@ -965,7 +965,7 @@ term_set_originmode(bool origin)
     }
 }
 
-void
+static void
 term_setscrollregion(size_t top, size_t bottom)
 /* 1-indexed */
 /* from=-1 means top, to=-1 means bottom */
@@ -986,7 +986,7 @@ term_setscrollregion(size_t top, size_t bottom)
 }
 
 
-void
+static void
 term_setcharattributes(int32_t arg[CSI_MAXARGS])
 {
     /* TODO: Add from http://en.wikipedia.org/wiki/ANSI_escape_code */
@@ -1097,7 +1097,7 @@ term_setcharattributes(int32_t arg[CSI_MAXARGS])
 #define CSI_IGNORED  warning("Ignored CSI: "CSI_DUMP);
 
 /* Reference: http://web.mit.edu/dosathena/doc/www/ek-vt520-rm.pdf */
-void
+static void
 csi_dispatch(char function, int32_t arg[CSI_MAXARGS], char privflag)
 {
     debug(CSI_DUMP);
@@ -1373,7 +1373,7 @@ csi_dispatch(char function, int32_t arg[CSI_MAXARGS], char privflag)
     }
 }
 
-void
+static void
 term_designate_charset(char intermediate, char function)
 /* Assign charset from ESC sequence */
 /* http://invisible-island.net/xterm/ctlseqs/ctlseqs.html */
@@ -1450,7 +1450,7 @@ term_designate_charset(char intermediate, char function)
 
 }
 
-void
+static void
 esc_dispatch(char function, char intermediate)
 {
     debug("%c/0x%02x %c", function, function, intermediate ? intermediate : ' ');
@@ -1531,7 +1531,7 @@ esc_dispatch(char function, char intermediate)
     }
 }
 
-void
+static void
 osc_dispatch(unused char *arg, unused size_t length)
 {
     debug(arg);

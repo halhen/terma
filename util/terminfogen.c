@@ -6,22 +6,22 @@
 
 #define LENGTH(a) (sizeof(a) / sizeof(a[0]))
 
-void
+static void
 set(char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
     printf("\t");
-    vprintf(fmt, args);
+    (void)vprintf(fmt, args);
     printf(",\n");
     va_end(args);
 
 }
 
-void
+static void
 set_key(const char *capname, const char *out)
 {
-    unsigned int o, b;
+    size_t o, b;
     char buf[100];
 
     for (o = b = 0; out[o] != '\0' && b < LENGTH(buf) - 1; o++) {
@@ -31,9 +31,9 @@ set_key(const char *capname, const char *out)
             buf[b++] = 'E';
         }
         /* Convert non-printing characters to their accoring CTRL sequence */
-        else if (out[o] < 0x20) {
+        else if (out[o] < (char)0x20) {
             buf[b++] = '^';
-            buf[b++] = out[o] + 0x40;
+            buf[b++] = out[o] + (char)0x40;
         } else {
             buf[b++] = out[o];
         }
@@ -46,6 +46,8 @@ set_key(const char *capname, const char *out)
 
 int main()
 {
+    size_t i;
+
     printf("\n\n# Values generated from config.h\n");
     set("cols#%d", config.cols);
     set("lines#%d", config.rows);
@@ -60,12 +62,11 @@ int main()
     }
 
     /* Key mappings */
-    for (unsigned int i = 0; i < LENGTH(keymap); i++) {
+    for (i = 0; i < LENGTH(keymap); i++) {
         if (keymap[i].capname != NULL) {
             set_key(keymap[i].capname, keymap[i].out);
         }
     }
-
 
     return 0;
 

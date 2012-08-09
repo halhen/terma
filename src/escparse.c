@@ -7,10 +7,10 @@
 
 /* Reference: http://www.vt100.net/emu/dec_ansi_parser */
 
-const char BEL=0x07;
-const char CAN=0x18;
-const char SUB=0x1A;
-const char ESC=0x1B;
+static const char BEL=0x07;
+static const char CAN=0x18;
+static const char SUB=0x1A;
+static const char ESC=0x1B;
 
 /*
  * There seems to be no specified limit of how long an escape sequence
@@ -33,7 +33,7 @@ static struct {
 
 
 
-void
+static void
 esc_collect(char c)
 {
     if (esc_seq.nbuf >= LENGTH(esc_seq.buf)) {
@@ -46,7 +46,7 @@ esc_collect(char c)
 }
 
 
-void
+static void
 esc_clear()
 {
     if (esc_seq.onexit) {
@@ -59,7 +59,7 @@ esc_clear()
 }
 
 
-void
+static void
 esc_csi_dispatch(char c)
 {
     int current = 0;
@@ -121,7 +121,7 @@ esc_csi_dispatch(char c)
         (*dispatch.csi)(c, params, private);
 }
 
-void
+static void
 esc_esc_dispatch(char c)
 {
     size_t i;
@@ -146,7 +146,7 @@ esc_esc_dispatch(char c)
 /*
  * states csi_entry, csi_ignore, csi_param, csi_intermediate
  */
-bool
+static bool
 esc_state_csi(char c)
 {
     if (between(c, 0x40, 0x7e)) {
@@ -167,7 +167,7 @@ esc_state_csi(char c)
     return false;
 }
 
-void
+static void
 esc_osc_end()
 {
     if (dispatch.osc) {
@@ -176,7 +176,7 @@ esc_osc_end()
     }
 }
 
-bool
+static bool
 esc_state_osc(char c)
 {
     if (c == BEL) {
@@ -195,14 +195,14 @@ esc_state_osc(char c)
     }
 }
 
-bool
+static bool
 esc_state_wait_for_ST(unused char c)
 {
     return true;
 }
 
 
-bool
+static bool
 esc_state_escape(char c)
 {
     switch (c) {

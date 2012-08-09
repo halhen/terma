@@ -1,4 +1,4 @@
-.PHONY: all, debug, profile, test, terminfo_local, test, clean, distclean
+.PHONY: all, debug, profile, test, terminfo_local, lint, clean, distclean
 
 SHELL = /bin/sh
 CC    = gcc
@@ -6,7 +6,7 @@ CC    = gcc
 INCS = -I.
 LIBS = -lX11 -lutil
  
-CFLAGS      += -std=gnu99 -pedantic -Wall -Wextra -march=native -D _XOPEN_SOURCE=600 -D _BSD_SOURCE
+CFLAGS      += -std=gnu99 -pedantic -Wall -Wextra -march=native
 LDFLAGS     += ${LIBS}
 DEBUGFLAGS   = -O0 -D_DEBUG -ggdb3
 RELEASEFLAGS = -O2 -DNDEBUG
@@ -78,3 +78,7 @@ info:
 %.o: %.c
 	$(CC) $(FLAGS) $(CFLAGS) $(RELEASEFLAGS) -c -o $@ $<
 	@$(CC) -MM $(CFLAGS) $*.c > $*.d
+
+
+lint:
+	splint $(SOURCES) -preproc +posixlib

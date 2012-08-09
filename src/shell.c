@@ -9,16 +9,13 @@
 
 #define INPUT_BUFFER_SIZE 4096
 
-void sh_destroy();
-void sh_exec();
-
 static struct {
     pid_t            pid;
     int              fd;
 } shell;
 
 
-void
+static void
 sigchld(unused int a)
 {
     int code = 0;
@@ -35,14 +32,14 @@ sigchld(unused int a)
 
 
 
-void
+static void
 sh_destroy()
 {
     debug("killing %d", shell.pid);
     kill(shell.pid, SIGKILL);
 }
 
-void
+static void
 sh_exec()
 {
     char **args;
@@ -122,4 +119,3 @@ sh_write(const char *str, size_t n)
         die("write failed: %d", errno);
     }
 }
-

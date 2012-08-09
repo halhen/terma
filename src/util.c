@@ -5,14 +5,16 @@
 
 #include "util.h"
 
-iconv_t cd;
+static iconv_t cd;
 
-void util_destroy()
+static void
+util_destroy()
 {
     iconv_close(cd);
 }
 
-void util_init()
+void
+util_init()
 {
     cd = iconv_open("WCHAR_T", "UTF-8");
     if (cd == (iconv_t)-1) {
