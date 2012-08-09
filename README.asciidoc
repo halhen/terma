@@ -1,6 +1,5 @@
 TERMA
 =====
-
 terma is a small VT102 compatible terminal emulator, designed to be used
 with e.g. tmux. It's main goals is speed (as in throughput and as in
 responsiveness). terma aims to contain only what's nescessary for a
@@ -30,3 +29,9 @@ The following is handled by e.g. tmux
 Compatibility
 -------------
  * Linux
+
+Credits
+-------
+A bit shout-out to the authors of http://st.suckless.org/[st]. Their
+code showed how to set up the plumbing. There are more than a few lines
+of code that are inspired (or more) from them.
