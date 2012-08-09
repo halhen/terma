@@ -1,0 +1,32 @@
+TERMA
+=====
+
+terma is a small VT102 compatible terminal emulator, designed to be used
+with e.g. tmux. It's main goals is speed (as in throughput and as in
+responsiveness). terma aims to contain only what's nescessary for a
+terminal emulator. For example, terma does not implement scrollback.
+
+Current status: Alpha quality; fairly good compatibility. Some known
+bugs exist and more testing with other curses applications to find the
+ones not yet known. The adventurous could use it with e.g. tmux, vim,
+etc. A couple of features are still missing, including mouse support and
+support for different character sets.
+
+Installation Makefile target, man page, etc yet to be done.
+
+Features
+--------
+ * UTF-8
+ * 256 colors
+ * Xlib based
+
+Non-Features
+------------
+The following is handled by e.g. tmux
+
+ * Scrollback buffers
+ * Copy/paste (may be implemented in the future)
+
+Compatibility
+-------------
+ * Linux

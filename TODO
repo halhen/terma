@@ -1,0 +1,26 @@
+Known errors
+------------
+* Scroll down page in vim leaves the line/column text in the previous
+  bottom row
+* bsdgames / worm: down-arrow leaves parts of the worm unpainted
+
+Features
+--------
+* Mouse support
+* Border pixels in window
+* terminal.dirty.left always 0
+
+Tests
+-----
+* vttest (+ document which are supposed to work)
+* valgrind
+* bsdgames worm
+
+Misc
+----
+* Check TODO:s in source
+* reset: memset(terminal, 0)?
+
+Documentation
+-------------
+* Explain concepts either in source file comments, or in HACKING

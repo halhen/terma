@@ -1,0 +1,5 @@
+terma
+*.info
+*.o
+*.d
+callgrind.out.*
