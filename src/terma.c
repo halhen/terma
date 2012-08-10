@@ -440,7 +440,7 @@ run()
             passive = timediff_usec(now, last_event) > usec_sleep_passive;
         }
 
-        if (FD_ISSET(shell_fd, &fds) && passive) {
+        if (!FD_ISSET(shell_fd, &fds) && passive) {
             term_gc(); /* Clean up term if we have time to spare */
         }
     }
